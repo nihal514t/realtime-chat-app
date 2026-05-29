@@ -25,6 +25,28 @@ app.use("/api/messages", messageRoutes);
 
 const PORT = process.env.PORT || 8000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// app.listen();
+
+const http = require("http");
+
+const { Server } = require("socket.io");
+
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
+
+const {
+  initializeSocket,
+} = require("./socket/socket");
+
+initializeSocket(io);
+
+server.listen(PORT, () => {
+  console.log(
+    `Server running on port ${PORT}`
+  );
 });
