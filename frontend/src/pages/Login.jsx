@@ -12,7 +12,7 @@ const navigate = useNavigate();
 const handleSubmit = async (e) => {
 e.preventDefault();
 
-```
+
 try {
   await login({
     email,
@@ -24,7 +24,7 @@ try {
   console.error(error);
   alert("Login failed");
 }
-```
+
 
 };
 
