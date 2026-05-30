@@ -27,7 +27,6 @@ function MessageArea({ selectedUser }) {
         const data = await getMessages(selectedUser._id, token);
 
         setMessages(data);
-        
       } catch (error) {
         console.error(error);
       }
@@ -38,11 +37,25 @@ function MessageArea({ selectedUser }) {
 
   useEffect(() => {
     socket.on("receiveMessage", async (message) => {
-      if (message.senderId?.toString() === selectedUser?._id) {
-        setMessages((prev) => [...prev, message]);
-      }
+      const isCurrentChat = message.senderId?.toString() === selectedUser?._id;
 
-      await updateMessageStatus(message._id, "delivered", token);
+      if (isCurrentChat) {
+        setMessages((prev) => [...prev, message]);
+
+        await updateMessageStatus(message._id, "seen", token);
+
+        socket.emit("messageSeen", {
+          senderId: message.senderId,
+          messageId: message._id,
+        });
+      } else {
+        await updateMessageStatus(message._id, "delivered", token);
+
+        socket.emit("messageDelivered", {
+          senderId: message.senderId,
+          messageId: message._id,
+        });
+      }
     });
 
     return () => {
@@ -51,17 +64,42 @@ function MessageArea({ selectedUser }) {
   }, [selectedUser, token]);
 
   useEffect(() => {
-    socket.on("userTyping", () => {
-      setIsTyping(true);
+    socket.on("userTyping", ({ senderId, senderName }) => {
+      console.log("USER TYPING:", senderId, selectedUser?._id);
+
+      if (senderId?.toString() === selectedUser?._id?.toString()) {
+        setIsTyping(true);
+      }
     });
 
-    socket.on("userStoppedTyping", () => {
-      setIsTyping(false);
+    socket.on("userStoppedTyping", ({ receiverId, senderId }) => {
+      if (senderId === selectedUser?._id) {
+        setIsTyping(false);
+      }
     });
 
     return () => {
       socket.off("userTyping");
       socket.off("userStoppedTyping");
+    };
+  }, [selectedUser]);
+
+  useEffect(() => {
+    socket.on("messageSeen", (messageId) => {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg._id === messageId
+            ? {
+                ...msg,
+                status: "seen",
+              }
+            : msg,
+        ),
+      );
+    });
+
+    return () => {
+      socket.off("messageSeen");
     };
   }, []);
 
@@ -70,6 +108,61 @@ function MessageArea({ selectedUser }) {
       behavior: "smooth",
     });
   }, [messages]);
+
+  useEffect(() => {
+    socket.on("messageDelivered", (messageId) => {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg._id === messageId
+            ? {
+                ...msg,
+                status: "delivered",
+              }
+            : msg,
+        ),
+      );
+    });
+
+    return () => {
+      socket.off("messageDelivered");
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!selectedUser) return;
+    if (!messages.length) return;
+
+    const markChatSeen = async () => {
+      const unseenMessages = messages.filter(
+        (msg) =>
+          msg.senderId?.toString() === selectedUser._id &&
+          msg.receiverId?.toString() === currentUserId &&
+          msg.status === "delivered",
+      );
+
+      for (const msg of unseenMessages) {
+        await updateMessageStatus(msg._id, "seen", token);
+
+        socket.emit("messageSeen", {
+          senderId: msg.senderId,
+          messageId: msg._id,
+        });
+
+        setMessages((prev) =>
+          prev.map((m) =>
+            m._id === msg._id
+              ? {
+                  ...m,
+                  status: "seen",
+                }
+              : m,
+          ),
+        );
+      }
+    };
+
+    markChatSeen();
+  }, [selectedUser, messages, currentUserId, token]);
 
   const handleSend = async () => {
     if (!newMessage.trim()) return;
@@ -148,7 +241,9 @@ function MessageArea({ selectedUser }) {
 
                     {msg.status === "delivered" && "✓✓"}
 
-                    {msg.status === "seen" && "✓✓"}
+                    {msg.status === "seen" && (
+                      <span className="text-blue-400">✓✓</span>
+                    )}
                   </p>
                 )}
               </div>
@@ -173,6 +268,7 @@ function MessageArea({ selectedUser }) {
 
             socket.emit("typing", {
               receiverId: selectedUser._id,
+              senderId: currentUserId,
               senderName: userInfo.name,
             });
 
@@ -181,6 +277,7 @@ function MessageArea({ selectedUser }) {
             typingTimeoutRef.current = setTimeout(() => {
               socket.emit("stopTyping", {
                 receiverId: selectedUser._id,
+                senderId: currentUserId,
               });
             }, 1000);
           }}
