@@ -30,5 +30,25 @@ export const sendMessage = async (
     }
   );
 
+
   return res.data;
 };
+
+export const updateMessageStatus =
+  async (
+    messageId,
+    status,
+    token
+  ) => {
+    const res = await axios.put(
+      `${API}/${messageId}/status`,
+      { status },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return res.data;
+  };

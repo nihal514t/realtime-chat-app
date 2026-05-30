@@ -1,5 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { getMessages, sendMessage } from "../services/messageService";
+import {
+  getMessages,
+  sendMessage,
+  updateMessageStatus,
+} from "../services/messageService";
 import socket from "../services/socketService";
 
 function MessageArea({ selectedUser }) {
@@ -32,16 +36,18 @@ function MessageArea({ selectedUser }) {
   }, [selectedUser, token]);
 
   useEffect(() => {
-    socket.on("receiveMessage", (message) => {
+    socket.on("receiveMessage", async (message) => {
       if (message.senderId?.toString() === selectedUser?._id) {
         setMessages((prev) => [...prev, message]);
       }
+
+      await updateMessageStatus(message._id, "delivered", token);
     });
 
     return () => {
       socket.off("receiveMessage");
     };
-  }, [selectedUser]);
+  }, [selectedUser, token]);
 
   useEffect(() => {
     socket.on("userTyping", () => {

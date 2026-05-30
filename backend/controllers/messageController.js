@@ -49,7 +49,28 @@ const getMessages = async (req, res) => {
   }
 };
 
+//updateMessage status
+const updateMessageStatus = async (req, res) => {
+  try {
+    const { messageId } = req.params;
+    const { status } = req.body;
+
+    const message = await Message.findByIdAndUpdate(
+      messageId,
+      { status },
+      { returnDocument: "after" },
+    );
+
+    res.json(message);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   sendMessage,
   getMessages,
+  updateMessageStatus,
 };
