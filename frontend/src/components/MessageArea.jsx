@@ -1,12 +1,21 @@
 import { useState, useEffect } from "react";
+import { getMessages } from "../services/messageService";
 
 function MessageArea({ selectedUser }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const userInfo = JSON.parse(localStorage.getItem("user"));
+
+  const token = userInfo?.token;
   useEffect(() => {
     if (!selectedUser) return;
 
-    // fetch messages here later
+    const fetchMessages = async () => {
+      const data = await getMessages(selectedUser._id,token);
+      setMessages(data);
+    };
+
+    fetchMessages();
   }, [selectedUser]);
   if (!selectedUser) {
     return (
@@ -29,7 +38,6 @@ function MessageArea({ selectedUser }) {
       </div>
 
       {/* Input Area */}
-      {/* Input Area */}
       <div className="border-t border-gray-200 p-4 flex gap-3">
         <input
           type="text"
@@ -46,5 +54,7 @@ function MessageArea({ selectedUser }) {
     </div>
   );
 }
+
+
 
 export default MessageArea;
