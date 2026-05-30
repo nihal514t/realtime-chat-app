@@ -27,6 +27,7 @@ function MessageArea({ selectedUser }) {
         const data = await getMessages(selectedUser._id, token);
 
         setMessages(data);
+        
       } catch (error) {
         console.error(error);
       }
@@ -141,6 +142,15 @@ function MessageArea({ selectedUser }) {
                     minute: "2-digit",
                   })}
                 </p>
+                {isMine && (
+                  <p className="text-xs text-gray-400">
+                    {msg.status === "sent" && "✓"}
+
+                    {msg.status === "delivered" && "✓✓"}
+
+                    {msg.status === "seen" && "✓✓"}
+                  </p>
+                )}
               </div>
             </div>
           );
