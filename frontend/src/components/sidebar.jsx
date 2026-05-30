@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import userService from "../services/userService";
 
-function Sidebar({ selectedUser, setSelectedUser }) {
+function Sidebar({ selectedUser, setSelectedUser, onlineUsers }) {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
@@ -29,15 +29,29 @@ function Sidebar({ selectedUser, setSelectedUser }) {
       </div>
 
       <div className="p-4 space-y-2">
-        {users.map((user) => (
-          <div
-            key={user._id}
-            onClick={() => setSelectedUser(user)}
-            className="p-4 rounded-2xl hover:bg-gray-100 cursor-pointer transition"
-          >
-            {user.name}
-          </div>
-        ))}
+        {users.map((user) => {
+          const isOnline = onlineUsers.includes(user._id.toString());
+
+          return (
+            <div
+              key={user._id}
+              onClick={() => setSelectedUser(user)}
+              className={`p-4 rounded-2xl cursor-pointer transition ${
+                selectedUser?._id === user._id
+                  ? "bg-gray-100"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span>{user.name}</span>
+
+                {isOnline && (
+                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
