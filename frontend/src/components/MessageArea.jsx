@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getMessages } from "../services/messageService";
+import { getMessages, sendMessage } from "../services/messageService";
 
 function MessageArea({ selectedUser }) {
   const [messages, setMessages] = useState([]);
@@ -11,7 +11,7 @@ function MessageArea({ selectedUser }) {
     if (!selectedUser) return;
 
     const fetchMessages = async () => {
-      const data = await getMessages(selectedUser._id,token);
+      const data = await getMessages(selectedUser._id, token);
       setMessages(data);
     };
 
@@ -25,6 +25,16 @@ function MessageArea({ selectedUser }) {
     );
   }
 
+  const handleSend = async () => {
+    if (!newMessage.trim()) return;
+
+    const sentMessage = await sendMessage(selectedUser._id, newMessage, token);
+
+    setMessages((prev) => [...prev, sentMessage]);
+
+    setNewMessage("");
+  };
+
   return (
     <div className="flex-1 flex flex-col">
       {/* Header */}
@@ -34,7 +44,11 @@ function MessageArea({ selectedUser }) {
 
       {/* Messages Container */}
       <div className="flex-1 overflow-y-auto p-4">
-        Messages will appear here
+        {messages.map((msg) => (
+          <div key={msg._id} className="mb-3 p-3 bg-white rounded-lg">
+            {msg.message}
+          </div>
+        ))}
       </div>
 
       {/* Input Area */}
@@ -47,14 +61,13 @@ function MessageArea({ selectedUser }) {
           className="flex-1 border border-gray-300 rounded-lg px-4 py-2 outline-none"
         />
 
-        <button className="px-5 py-2 bg-black text-white rounded-lg">
+        <button className="px-5 py-2 bg-black text-white rounded-lg"
+        onClick={handleSend} >
           Send
         </button>
       </div>
     </div>
   );
 }
-
-
 
 export default MessageArea;
