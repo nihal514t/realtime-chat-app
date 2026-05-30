@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getMessages, sendMessage } from "../services/messageService";
 import socket from "../services/socketService";
 
@@ -6,6 +6,7 @@ function MessageArea({ selectedUser }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const userInfo = JSON.parse(localStorage.getItem("user"));
+  const messagesEndRef = useRef(null);
 
   const token = userInfo?.token;
   useEffect(() => {
@@ -28,6 +29,12 @@ function MessageArea({ selectedUser }) {
       socket.off("receiveMessage");
     };
   }, []);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages]);
 
   if (!selectedUser) {
     return (
@@ -83,6 +90,7 @@ function MessageArea({ selectedUser }) {
             </div>
           );
         })}
+        <div ref={messagesEndRef}></div>
       </div>
 
       {/* Input Area */}
