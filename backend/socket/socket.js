@@ -7,10 +7,15 @@ const initializeSocket = (io) => {
     socket.on("addUser", (userId) => {
       onlineUsers.set(userId, socket.id);
 
-      io.emit(
-        "onlineUsers",
-        Array.from(onlineUsers.keys())
-      );
+      io.emit("onlineUsers", Array.from(onlineUsers.keys()));
+    });
+
+    socket.on("sendMessage", ({ receiverId, message }) => {
+      const receiverSocketId = onlineUsers.get(receiverId);
+
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("receiveMessage", message);
+      }
     });
 
     socket.on("disconnect", () => {
@@ -21,15 +26,9 @@ const initializeSocket = (io) => {
         }
       }
 
-      io.emit(
-        "onlineUsers",
-        Array.from(onlineUsers.keys())
-      );
+      io.emit("onlineUsers", Array.from(onlineUsers.keys()));
 
-      console.log(
-        "User Disconnected:",
-        socket.id
-      );
+      console.log("User Disconnected:", socket.id);
     });
   });
 };

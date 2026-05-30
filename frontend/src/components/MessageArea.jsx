@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getMessages, sendMessage } from "../services/messageService";
+import socket from "../services/socketService";
 
 function MessageArea({ selectedUser }) {
   const [messages, setMessages] = useState([]);
@@ -16,7 +17,18 @@ function MessageArea({ selectedUser }) {
     };
 
     fetchMessages();
-  }, [selectedUser,token]);
+  }, [selectedUser, token]);
+
+  useEffect(() => {
+    socket.on("receiveMessage", (message) => {
+      setMessages((prev) => [...prev, message]);
+    });
+
+    return () => {
+      socket.off("receiveMessage");
+    };
+  }, []);
+
   if (!selectedUser) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -25,8 +37,7 @@ function MessageArea({ selectedUser }) {
     );
   }
 
-const currentUserId = userInfo?._id;
-
+  const currentUserId = userInfo?._id;
 
   const handleSend = async () => {
     if (!newMessage.trim()) return;
@@ -34,6 +45,11 @@ const currentUserId = userInfo?._id;
     const sentMessage = await sendMessage(selectedUser._id, newMessage, token);
 
     setMessages((prev) => [...prev, sentMessage]);
+
+    socket.emit("sendMessage", {
+      receiverId: selectedUser._id,
+      message: sentMessage,
+    });
 
     setNewMessage("");
   };
