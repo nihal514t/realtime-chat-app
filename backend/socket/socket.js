@@ -18,6 +18,22 @@ const initializeSocket = (io) => {
       }
     });
 
+    socket.on("typing", ({ receiverId, senderName }) => {
+      const receiverSocketId = onlineUsers.get(receiverId);
+
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("userTyping", senderName);
+      }
+    });
+
+    socket.on("stopTyping", ({ receiverId }) => {
+      const receiverSocketId = onlineUsers.get(receiverId);
+
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("userStoppedTyping");
+      }
+    });
+
     socket.on("disconnect", () => {
       for (const [userId, socketId] of onlineUsers.entries()) {
         if (socketId === socket.id) {
