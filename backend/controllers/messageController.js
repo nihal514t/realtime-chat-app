@@ -22,10 +22,6 @@ const sendMessage = async (req, res) => {
 // Get Conversation
 const getMessages = async (req, res) => {
   try {
-    console.log("GET MESSAGES HIT");
-    console.log("PARAMS:", req.params);
-    console.log("USER:", req.user);
-
     const { userId } = req.params;
 
     const messages = await Message.find({
@@ -42,8 +38,6 @@ const getMessages = async (req, res) => {
     }).sort({
       createdAt: 1,
     });
-
-    console.log("MESSAGES:", messages);
 
     res.json(messages);
   } catch (error) {

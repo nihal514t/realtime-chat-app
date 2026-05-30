@@ -8,7 +8,7 @@ const getUsers = async (req, res) => {
       },
       
     }).select("-password");
-    console.log(req.user);
+
 
     res.json(users);
   } catch (error) {
