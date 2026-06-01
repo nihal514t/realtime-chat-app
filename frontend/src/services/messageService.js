@@ -12,11 +12,7 @@ export const getMessages = async (userId, token) => {
   return res.data;
 };
 
-export const sendMessage = async (
-  receiverId,
-  message,
-  token
-) => {
+export const sendMessage = async (receiverId, message, token) => {
   const res = await axios.post(
     API,
     {
@@ -27,28 +23,32 @@ export const sendMessage = async (
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
+    },
   );
-
 
   return res.data;
 };
 
-export const updateMessageStatus =
-  async (
-    messageId,
-    status,
-    token
-  ) => {
-    const res = await axios.put(
-      `${API}/${messageId}/status`,
-      { status },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+export const updateMessageStatus = async (messageId, status, token) => {
+  const res = await axios.put(
+    `${API}/${messageId}/status`,
+    { status },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
 
-    return res.data;
-  };
+  return res.data;
+};
+
+export const getUnreadCounts = async (token) => {
+  const res = await axios.get(`${API}/unread`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return res.data;
+};

@@ -54,14 +54,45 @@ const updateMessageStatus = async (req, res) => {
   try {
     const { messageId } = req.params;
     const { status } = req.body;
+    const updateData = { status };
 
-    const message = await Message.findByIdAndUpdate(
-      messageId,
-      { status },
-      { returnDocument: "after" },
-    );
+    if (status === "seen") {
+      updateData.read = true;
+    }
+
+    const message = await Message.findByIdAndUpdate(messageId, updateData, {
+      returnDocument: "after",
+    });
 
     res.json(message);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+//unread messages
+const getUnreadCounts = async (req, res) => {
+  try {
+    const counts = await Message.aggregate([
+      {
+        $match: {
+          receiverId: req.user._id,
+          read: false,
+        },
+      },
+      {
+        $group: {
+          _id: "$senderId",
+          count: {
+            $sum: 1,
+          },
+        },
+      },
+    ]);
+
+    res.json(counts);
   } catch (error) {
     res.status(500).json({
       message: error.message,
@@ -73,4 +104,5 @@ module.exports = {
   sendMessage,
   getMessages,
   updateMessageStatus,
+  getUnreadCounts,
 };

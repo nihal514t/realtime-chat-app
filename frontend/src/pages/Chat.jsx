@@ -7,7 +7,7 @@ function Chat() {
   const [selectedUser, setSelectedUser] = useState(null);
   const user = JSON.parse(localStorage.getItem("user"));
   const [onlineUsers, setOnlineUsers] = useState([]);
-  console.log("ONLINE USERS:", onlineUsers);
+  const [refreshUnread, setRefreshUnread] = useState(0);
   useEffect(() => {
     if (user?._id) {
       socket.emit("addUser", user._id);
@@ -28,8 +28,11 @@ function Chat() {
         selectedUser={selectedUser}
         setSelectedUser={setSelectedUser}
         onlineUsers={onlineUsers}
+        refreshUnread={refreshUnread}
       />
-      <MessageArea selectedUser={selectedUser} />
+      <MessageArea selectedUser={selectedUser} onMessageReceived={() =>
+    setRefreshUnread((p) => p + 1)
+  }/>
     </div>
   );
 }

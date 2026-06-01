@@ -6,7 +6,7 @@ import {
 } from "../services/messageService";
 import socket from "../services/socketService";
 
-function MessageArea({ selectedUser }) {
+function MessageArea({ selectedUser,onMessageReceived, }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -41,6 +41,7 @@ function MessageArea({ selectedUser }) {
 
       if (isCurrentChat) {
         setMessages((prev) => [...prev, message]);
+        onMessageReceived?.();
 
         await updateMessageStatus(message._id, "seen", token);
 
