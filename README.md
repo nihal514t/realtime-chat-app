@@ -105,7 +105,7 @@ backend/
 ### Clone Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/nihal514t/realtime-chat-app.git
 cd chat-app
 ```
 
