@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = "http://localhost:8000/api/messages";
+const API = `${import.meta.env.VITE_API_URL}/messages`;
 
 export const getMessages = async (userId, token) => {
   const res = await axios.get(`${API}/${userId}`, {
