@@ -1,6 +1,38 @@
 # MERN Realtime Chat Application
 
-A full stack realtime chat application built with the MERN stack, featuring authentication, private messaging, online presence, typing indicators, and message delivery tracking similar to modern messaging platforms.
+A full stack realtime chat application built with the MERN stack, featuring authentication, private messaging, online presence, typing indicators, message delivery tracking, and unread message management similar to modern messaging platforms.
+
+## Live Demo
+
+Frontend: https://realtime-chat-app-psi-lime.vercel.app/chat
+
+Backend: https://realtime-chat-app-1uz6.onrender.com
+
+## Screenshots
+
+### Login Page
+
+![Login Page](./screenshots/login.png)
+
+### Signup Page
+
+![Signup Page](./screenshots/signup.png)
+
+### Chat Dashboard
+
+![Chat Dashboard](./screenshots/chat-home.png)
+
+### Realtime Messaging
+
+![Realtime Messaging](./screenshots/messaging.png)
+
+### Typing Indicator
+
+![Typing Indicator](./screenshots/typing-indicator.png)
+
+### Online Users
+
+![Online Users](./screenshots/online-users.png)
 
 ## Features
 
@@ -50,7 +82,7 @@ A full stack realtime chat application built with the MERN stack, featuring auth
 
 ### Frontend
 
-* React
+* React.js
 * React Router DOM
 * Axios
 * Socket.IO Client
@@ -71,7 +103,7 @@ A full stack realtime chat application built with the MERN stack, featuring auth
 
 ## Project Structure
 
-```bash
+```text
 frontend/
 ├── src/
 │   ├── components/
@@ -106,7 +138,8 @@ backend/
 
 ```bash
 git clone https://github.com/nihal514t/realtime-chat-app.git
-cd chat-app
+
+cd realtime-chat-app
 ```
 
 ### Backend Setup
@@ -137,12 +170,12 @@ npm install
 npm run dev
 ```
 
-## Environment Variables
+Create a `.env` file:
 
 ```env
-PORT=8000
-MONGO_URI=
-JWT_SECRET=
+VITE_API_URL=backend_api_url
+
+VITE_SOCKET_URL=your_socket_url
 ```
 
 ## Implemented Features
@@ -164,7 +197,7 @@ JWT_SECRET=
 ## Future Improvements
 
 * Last Message Preview
-* Message Notifications
+* Push Notifications
 * User Avatars
 * Image Sharing
 * File Sharing
@@ -177,7 +210,11 @@ JWT_SECRET=
 
 ## Author
 
-Muhammed Nihal
+### Muhammed Nihal P
+
+GitHub: https://github.com/nihal514t
+
+LinkedIn: https://www.linkedin.com/in/nihal514t/
 
 ## License
 
