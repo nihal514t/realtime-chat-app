@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../components/sidebar";
 import MessageArea from "../components/MessageArea";
 import socket from "../services/socketService";
 
